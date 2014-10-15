@@ -94,6 +94,19 @@ class Graph(object):
     def add_edge_internal(self, edge):
         raise NotImplementedError()
 
+    def _get_edges(self):
+        raise NotImplementedError()
+
+    def __str__(self):
+        s = 'Vertices:\n    '
+        s += ', '.join(map(str, self.vertices))
+        s += '\nEdges:\n    '
+        edges = filter(None, self._get_edges())
+        edges.sort()
+        s += '\n    '.join(map(str, edges))
+        return s
+
+
 
 class MatrixGraph(Graph):
 
@@ -184,15 +197,8 @@ class MatrixGraph(Graph):
 
         return self.matrix[inx_from][inx_to]
 
-    def __str__(self):
-        # TODO sort edges (id_from / id_to)
-        s = 'Vertices:\n    '
-        s += ', '.join(map(str, self.vertices))
-        s += '\nEdges:\n    '
-        flat_matrix = filter(None, list(itertools.chain.from_iterable(self.matrix)))
-        flat_matrix.sort()
-        s += '\n    '.join(map(str, flat_matrix))
-        return s
+    def _get_edges(self):
+        return filter(None, list(itertools.chain.from_iterable(self.matrix)))
 
 
 class ListGraph(Graph):
@@ -249,14 +255,8 @@ class ListGraph(Graph):
     def get_edges_count(self):
         return sum([len(l) for l in self.adj_list])
 
-    def __str__(self):
-        s = 'Vertices:\n    '
-        s += ', '.join(map(str, self.vertices))
-        s += '\nEdges:\n    '
-        flat_matrix = filter(None, list(itertools.chain.from_iterable(self.adj_list)))
-        flat_matrix.sort()
-        s += '\n    '.join(map(str, flat_matrix))
-        return s
+    def _get_edges(self):
+        return filter(None, list(itertools.chain.from_iterable(self.adj_list)))
 
     def is_edge_exist(self, vertex_from, vertex_to):
         try:

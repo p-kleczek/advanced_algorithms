@@ -1,0 +1,7 @@
+*.pyc
+*.po
+*.mo
+.idea
+.project
+.pydevproject
+.lvimrc
