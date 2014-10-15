@@ -62,7 +62,7 @@ class Graph(object):
         if self.is_edge_exist(edge.vertex_from, edge.vertex_to):
             print 'WARNING: Edge %s -> %s already exist! (skipped)' % (edge.vertex_from, edge.vertex_to)
         else:
-            self.add_edge_internal(edge)
+            self._add_edge_internal(edge)
 
     def delete_edge(self, edge):
         raise NotImplementedError()
@@ -85,7 +85,7 @@ class Graph(object):
         return next(v for v in self.vertices if v.label == vertex_id)
 
     def get_edge(self, edge_id):
-        raise NotImplementedError()
+        return [e.label == edge_id for e in self._get_edges()][0]
 
     @classmethod
     def get_edge_ends(cls, edge):
@@ -103,7 +103,7 @@ class Graph(object):
     def is_edge_exist(self, vertex_from, vertex_to):
         raise NotImplementedError()
 
-    def add_edge_internal(self, edge):
+    def _add_edge_internal(self, edge):
         raise NotImplementedError()
 
     def _get_edges(self):
@@ -139,7 +139,7 @@ class MatrixGraph(Graph):
             del row[inx]
         del self.matrix[inx]
 
-    def add_edge_internal(self, edge):
+    def _add_edge_internal(self, edge):
         inx_from = self.add_vertex(edge.vertex_from)
         inx_to = self.add_vertex(edge.vertex_to)
         self.matrix[inx_from][inx_to] = edge
@@ -172,9 +172,9 @@ class MatrixGraph(Graph):
         outgoing = filter(lambda e: e.vertex_from == vertex, row)
         return outgoing
 
-    def get_edge(self, edge_id):
-        flat_matrix = list(itertools.chain.from_iterable(self.matrix))
-        return filter(lambda e: e.label == edge_id, filter(None, flat_matrix))[0]
+    # def get_edge(self, edge_id):
+    #     flat_matrix = list(itertools.chain.from_iterable(self.matrix))
+    #     return filter(lambda e: e.label == edge_id, filter(None, flat_matrix))[0]
 
     def get_vertices_count(self):
         return len(self.vertices)
@@ -217,7 +217,7 @@ class ListGraph(Graph):
         for l in self.adj_list:
             [l.remove(e) for e in l if e.vertex_to == vertex]
 
-    def add_edge_internal(self, edge):
+    def _add_edge_internal(self, edge):
         inx_from = self.add_vertex(edge.vertex_from)
         self.add_vertex(edge.vertex_to)
         self.adj_list[inx_from].append(edge)
@@ -243,9 +243,9 @@ class ListGraph(Graph):
         inx = self.vertices.index(vertex)
         return self.adj_list[inx]
 
-    def get_edge(self, edge_id):
-        flat_adj_list = list(itertools.chain.from_iterable(self.adj_list))
-        return next(e for e in flat_adj_list if e.label == edge_id)
+    # def get_edge(self, edge_id):
+    #     flat_adj_list = list(itertools.chain.from_iterable(self.adj_list))
+    #     return next(e for e in flat_adj_list if e.label == edge_id)
 
     # def get_edges_count(self):
     #     return sum([len(l) for l in self.adj_list])
