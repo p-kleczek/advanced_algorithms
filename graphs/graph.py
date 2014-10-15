@@ -85,7 +85,7 @@ class Graph(object):
         return next(v for v in self.vertices if v.label == vertex_id)
 
     def get_edge(self, edge_id):
-        return [e.label == edge_id for e in self._get_edges()][0]
+        return [e for e in self._get_edges() if e.label == edge_id][0]
 
     @classmethod
     def get_edge_ends(cls, edge):
@@ -149,14 +149,6 @@ class MatrixGraph(Graph):
         inx_to = self.vertices.index(edge.vertex_to)
         self.matrix[inx_from][inx_to] = None
 
-    # def get_neighbors(self, vertex):
-    #     inx = self.vertices.index(vertex)
-    #     neighbors = []
-    #     for (pos, elem) in enumerate(self.matrix[inx]):
-    #         if elem:
-    #             neighbors.append(self.vertices[pos])
-    #     return neighbors
-
     def get_incoming_edges(self, vertex):
         inx = self.vertices.index(vertex)
         incoming_edges = []
@@ -171,18 +163,6 @@ class MatrixGraph(Graph):
         row = filter(None, self.matrix[inx])
         outgoing = filter(lambda e: e.vertex_from == vertex, row)
         return outgoing
-
-    # def get_edge(self, edge_id):
-    #     flat_matrix = list(itertools.chain.from_iterable(self.matrix))
-    #     return filter(lambda e: e.label == edge_id, filter(None, flat_matrix))[0]
-
-    def get_vertices_count(self):
-        return len(self.vertices)
-
-    # def is_neighbors(self, vertex_1, vertex_2):
-    #     inx_1 = self.vertices.index(vertex_1)
-    #     inx_2 = self.vertices.index(vertex_2)
-    #     return self.matrix[inx_1][inx_2] or self.matrix[inx_2][inx_1]
 
     def is_edge_exist(self, vertex_from, vertex_to):
         try:
@@ -226,15 +206,6 @@ class ListGraph(Graph):
         inx = self.vertices.index(edge.vertex_from)
         self.adj_list[inx].remove(edge)
 
-    # def get_neighbors(self, vertex):
-    #     inx = self.vertices.index(vertex)
-    #     neighbors = []
-    #     [neighbors.append(e.vertex_to) for e in self.adj_list[inx]]  # outgoing
-    #     for (i, l) in enumerate(self.adj_list):
-    #         if any(e.vertex_to == vertex for e in l):
-    #             neighbors.append(self.vertices[i])
-    #     return neighbors
-
     def get_incoming_edges(self, vertex):
         flat_adj_list = list(itertools.chain.from_iterable(self.adj_list))
         return [e for e in flat_adj_list if e.vertex_to == vertex]
@@ -242,13 +213,6 @@ class ListGraph(Graph):
     def get_outgoing_edges(self, vertex):
         inx = self.vertices.index(vertex)
         return self.adj_list[inx]
-
-    # def get_edge(self, edge_id):
-    #     flat_adj_list = list(itertools.chain.from_iterable(self.adj_list))
-    #     return next(e for e in flat_adj_list if e.label == edge_id)
-
-    # def get_edges_count(self):
-    #     return sum([len(l) for l in self.adj_list])
 
     def _get_edges(self):
         return filter(None, list(itertools.chain.from_iterable(self.adj_list)))
