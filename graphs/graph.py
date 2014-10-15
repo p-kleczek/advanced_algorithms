@@ -54,7 +54,9 @@ class Graph(object):
         return self.vertices.index(vertex), inserted
 
     def delete_vertex(self, vertex):
-        raise NotImplementedError()
+        inx = self.vertices.index(vertex)
+        self.vertices.remove(vertex)
+        return inx
 
     def add_edge(self, edge):
         if self.is_edge_exist(edge.vertex_from, edge.vertex_to):
@@ -132,8 +134,7 @@ class MatrixGraph(Graph):
         return inx
 
     def delete_vertex(self, vertex):
-        inx = self.vertices.index(vertex)
-        self.vertices.remove(vertex)
+        inx = super(MatrixGraph, self).delete_vertex(vertex)
         for row in self.matrix:
             del row[inx]
         del self.matrix[inx]
@@ -211,8 +212,7 @@ class ListGraph(Graph):
         return inx
 
     def delete_vertex(self, vertex):
-        inx = self.vertices.index(vertex)
-        self.vertices.remove(vertex)
+        inx = super(ListGraph, self).delete_vertex(vertex)
         del self.adj_list[inx]
         for l in self.adj_list:
             [l.remove(e) for e in l if e.vertex_to == vertex]
