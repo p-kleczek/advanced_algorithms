@@ -83,7 +83,7 @@ class Graph(object):
         return len(self.vertices)
 
     def get_edges_count(self):
-        raise NotImplementedError()
+        return len(self._get_edges())
 
     def is_neighbors(self, vertex_1, vertex_2):
         return vertex_2 in self.get_neighbors(vertex_1)
@@ -105,7 +105,6 @@ class Graph(object):
         edges.sort()
         s += '\n    '.join(map(str, edges))
         return s
-
 
 
 class MatrixGraph(Graph):
@@ -175,10 +174,6 @@ class MatrixGraph(Graph):
 
     def get_vertices_count(self):
         return len(self.vertices)
-
-    def get_edges_count(self):
-        flat_matrix = list(itertools.chain.from_iterable(self.matrix))
-        return sum([x is not None for x in flat_matrix])
 
     # def is_neighbors(self, vertex_1, vertex_2):
     #     inx_1 = self.vertices.index(vertex_1)
@@ -252,8 +247,8 @@ class ListGraph(Graph):
         flat_adj_list = list(itertools.chain.from_iterable(self.adj_list))
         return next(e for e in flat_adj_list if e.label == edge_id)
 
-    def get_edges_count(self):
-        return sum([len(l) for l in self.adj_list])
+    # def get_edges_count(self):
+    #     return sum([len(l) for l in self.adj_list])
 
     def _get_edges(self):
         return filter(None, list(itertools.chain.from_iterable(self.adj_list)))
