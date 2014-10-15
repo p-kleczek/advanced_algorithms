@@ -18,6 +18,7 @@ class Vertex(object):
     def __le__(self, other):
         return self.label < other.label
 
+
 @total_ordering
 class Edge(object):
     def __init__(self, label, vertex_from, vertex_to, weight):
@@ -41,7 +42,16 @@ class Graph(object):
         self.vertices = []
 
     def add_vertex(self, vertex):
-        self.vertices.append(vertex)
+        """
+
+        :param vertex:
+        :return: index of vertex in the list
+        """
+        inserted = False
+        if not vertex in self.vertices:
+            self.vertices.append(vertex)
+            inserted = True
+        return self.vertices.index(vertex), inserted
 
     def delete_vertex(self, vertex):
         raise NotImplementedError()
@@ -114,10 +124,12 @@ class MatrixGraph(Graph):
         self.matrix = []
 
     def add_vertex(self, vertex):
-        super(MatrixGraph, self).add_vertex(vertex)
-        for row in self.matrix:
-            row.append(None)
-        self.matrix.append([None] * len(self.vertices))
+        inx, inserted = super(MatrixGraph, self).add_vertex(vertex)
+        if inserted:
+            for row in self.matrix:
+                row.append(None)
+            self.matrix.append([None] * len(self.vertices))
+        return inx
 
     def delete_vertex(self, vertex):
         inx = self.vertices.index(vertex)
@@ -127,17 +139,8 @@ class MatrixGraph(Graph):
         del self.matrix[inx]
 
     def add_edge_internal(self, edge):
-        try:
-            inx_from = self.vertices.index(edge.vertex_from)
-        except ValueError:
-            self.add_vertex(edge.vertex_from)
-            inx_from = self.vertices.index(edge.vertex_from)
-        try:
-            inx_to = self.vertices.index(edge.vertex_to)
-        except ValueError:
-            self.add_vertex(edge.vertex_to)
-            inx_to = self.vertices.index(edge.vertex_to)
-
+        inx_from = self.add_vertex(edge.vertex_from)
+        inx_to = self.add_vertex(edge.vertex_to)
         self.matrix[inx_from][inx_to] = edge
 
     def delete_edge(self, edge):
@@ -202,8 +205,10 @@ class ListGraph(Graph):
         self.adj_list = []
 
     def add_vertex(self, vertex):
-        super(ListGraph, self).add_vertex(vertex)
-        self.adj_list.append([])
+        inx, inserted = super(ListGraph, self).add_vertex(vertex)
+        if inserted:
+            self.adj_list.append([])
+        return inx
 
     def delete_vertex(self, vertex):
         inx = self.vertices.index(vertex)
@@ -213,13 +218,8 @@ class ListGraph(Graph):
             [l.remove(e) for e in l if e.vertex_to == vertex]
 
     def add_edge_internal(self, edge):
-        if not edge.vertex_from in self.vertices:
-            self.vertices.append(edge.vertex_from)
-            self.adj_list.append([])
-        if not edge.vertex_to in self.vertices:
-            self.vertices.append(edge.vertex_to)
-            self.adj_list.append([])
-        inx_from = self.vertices.index(edge.vertex_from)
+        inx_from = self.add_vertex(edge.vertex_from)
+        self.add_vertex(edge.vertex_to)
         self.adj_list[inx_from].append(edge)
 
     def delete_edge(self, edge):
