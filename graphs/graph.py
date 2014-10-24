@@ -229,3 +229,13 @@ class ListGraph(Graph):
             return False
 
         return any(e.vertex_to == vertex_to for e in self.adj_list[inx_from])
+
+
+def read_graph(filename, graph):
+    with open(filename) as f:
+        _id = 1
+        for line in f:
+            vals = line.strip().split('; ')
+            e = Edge(_id, int(vals[0]), int(vals[1]), int(vals[2]))
+            _id += 1
+            graph.add_edge(e)
