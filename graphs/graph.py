@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from functools import total_ordering
 import itertools
 
@@ -84,8 +85,11 @@ class Graph(object):
     def get_vertex(self, vertex_id):
         return next(v for v in self.vertices if v.label == vertex_id)
 
+    def get_vertex_position(self, vertex):
+        return self.vertices.index(vertex)
+
     def get_edge(self, edge_id):
-        return [e for e in self._get_edges() if e.label == edge_id][0]
+        return [e for e in self.get_edges() if e.label == edge_id][0]
 
     @classmethod
     def get_edge_ends(cls, edge):
@@ -95,7 +99,7 @@ class Graph(object):
         return len(self.vertices)
 
     def get_edges_count(self):
-        return len(self._get_edges())
+        return len(self.get_edges())
 
     def is_neighbors(self, vertex_1, vertex_2):
         return vertex_2 in self.get_neighbors(vertex_1)
@@ -106,14 +110,15 @@ class Graph(object):
     def _add_edge_internal(self, edge):
         raise NotImplementedError()
 
-    def _get_edges(self):
-        raise NotImplementedError()
+    @abstractmethod
+    def get_edges(self):
+        pass
 
     def __str__(self):
         s = 'Vertices:\n    '
         s += ', '.join(map(str, self.vertices))
         s += '\nEdges:\n    '
-        edges = filter(None, self._get_edges())
+        edges = filter(None, self.get_edges())
         edges.sort()
         s += '\n    '.join(map(str, edges))
         return s
@@ -176,7 +181,7 @@ class MatrixGraph(Graph):
 
         return self.matrix[inx_from][inx_to]
 
-    def _get_edges(self):
+    def get_edges(self):
         return filter(None, list(itertools.chain.from_iterable(self.matrix)))
 
 
@@ -214,7 +219,7 @@ class ListGraph(Graph):
         inx = self.vertices.index(vertex)
         return self.adj_list[inx]
 
-    def _get_edges(self):
+    def get_edges(self):
         return filter(None, list(itertools.chain.from_iterable(self.adj_list)))
 
     def is_edge_exist(self, vertex_from, vertex_to):

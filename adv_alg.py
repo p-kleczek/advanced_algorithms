@@ -16,8 +16,8 @@ with open('data/graf.txt') as f:
 
 print 'MATRIX graph'
 print mg
-print "\nControl sum = %s " % (sum ([e.weight for e in mg._get_edges() if e.vertex_from < e.vertex_to]), )
+print "\nControl sum = %s " % sum([e.weight for e in mg.get_edges() if e.vertex_from < e.vertex_to])
 print
 print 'LIST graph'
 print lg
-print "\nControl sum = %s " % (sum ([e.weight for e in lg._get_edges() if e.vertex_from < e.vertex_to]), )
+print "\nControl sum = %s " % sum([e.weight for e in lg.get_edges() if e.vertex_from < e.vertex_to])

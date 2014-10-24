@@ -41,6 +41,14 @@ class GraphTest(unittest.TestCase):
         self.g.add_vertex(self.v2)
         self.assertEqual(self.g.get_vertices_count(), 2)
 
+    def test_get_vertex_position(self):
+        self.g.add_vertex(self.v1)
+        self.g.add_vertex(self.v2)
+        self.g.add_vertex(self.v3)
+        self.assertEqual(self.g.get_vertex_position(self.v1), 0)
+        self.assertEqual(self.g.get_vertex_position(self.v2), 1)
+        self.assertEqual(self.g.get_vertex_position(self.v3), 2)
+
 
 class MatrixGraphTest(GraphTest):
     def setUp(self):
