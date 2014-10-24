@@ -1,4 +1,4 @@
-from graphs.graph import MatrixGraph, Vertex, Edge, ListGraph, Graph
+from graphs.graph import MatrixGraph, Vertex, Edge, ListGraph, Graph, read_graph
 
 import unittest
 
@@ -136,6 +136,11 @@ class MatrixGraphTest(GraphTest):
         self.assertFalse(self.g.is_neighbors(self.v3, self.v1))
         self.assertFalse(self.g.is_neighbors(self.v3, self.v2))
 
+    def test_acceptance(self):
+        read_graph('../../data/graf.txt', self.g)
+        control_sum = sum([e.weight for e in self.g.get_edges() if e.vertex_from < e.vertex_to])
+        self.assertEqual(control_sum, 4790)
+
 
 class ListGraphTest(GraphTest):
     def setUp(self):
@@ -229,3 +234,8 @@ class ListGraphTest(GraphTest):
         self.assertTrue(self.g.is_neighbors(self.v2, self.v1))
         self.assertFalse(self.g.is_neighbors(self.v3, self.v1))
         self.assertFalse(self.g.is_neighbors(self.v3, self.v2))
+
+    def test_acceptance(self):
+        read_graph('../../data/graf.txt', self.g)
+        control_sum = sum([e.weight for e in self.g.get_edges() if e.vertex_from < e.vertex_to])
+        self.assertEqual(control_sum, 4790)
