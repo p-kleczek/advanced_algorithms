@@ -49,7 +49,7 @@ def floyd_warshall(graph):
     return predecessors
 
 
-def graph_path(predecessors, u_inx, v_inx):
+def reconstruct_path(predecessors, u_inx, v_inx):
     """
     Reconstructs path from u to v based on the predecessors matrix.
 

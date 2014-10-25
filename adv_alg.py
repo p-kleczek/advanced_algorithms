@@ -1,5 +1,5 @@
 from graphs.graph import MatrixGraph, read_graph
-from graphs.shortest_paths import floyd_warshall, graph_path
+from graphs.shortest_paths import floyd_warshall, reconstruct_path
 from utils.print_utils import print_2d
 
 __author__ = 'pawel'
@@ -18,6 +18,6 @@ print_2d(pred)
 for i in xrange(g.get_vertices_count()):
     for j in xrange(g.get_vertices_count()):
         # print i, j
-        pth = graph_path(pred, i, j)
+        pth = reconstruct_path(pred, i, j)
         if pth:
             print pth
