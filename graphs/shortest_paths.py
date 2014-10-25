@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from utils.print_utils import print_2d
 
 __author__ = 'pawel'
 
@@ -24,8 +25,8 @@ __author__ = 'pawel'
 def floyd_warshall(graph):
     INF = sys.maxint
     n = len(graph.vertices)
-    distances = [[[INF] * n] * n]
-    predecessors = [[[None] * n] * n]
+    distances = [[INF for i in xrange(n)] for j in xrange(n)]
+    predecessors = [[None for i in xrange(n)] for j in xrange(n)]
     for v in graph.vertices:
         x = graph.get_vertex_position(v)
         distances[x][x] = 0
@@ -33,7 +34,7 @@ def floyd_warshall(graph):
         x = graph.get_vertex_position(e.vertex_from)
         y = graph.get_vertex_position(e.vertex_to)
         distances[x][y] = e.weight
-        predecessors[x][y] = e.vertex_from
+        predecessors[x][y] = x
 
     for u in graph.vertices:
         u_pos = graph.get_vertex_position(u)
@@ -48,4 +49,23 @@ def floyd_warshall(graph):
     return predecessors
 
 
-floyd_warshall(None)
+def graph_path(predecessors, u_inx, v_inx):
+    """
+    Reconstructs path from u to v based on the predecessors matrix.
+
+    :param predecessors: list of lists
+    :param u_inx: Vertex
+    :param v_inx: Vertex
+    :return: list
+    """
+    if predecessors[u_inx][v_inx] is None:
+        return []
+    graph_path = [v_inx]
+    # Prevent infinity-loops
+    inx = 0
+    while u_inx != v_inx and inx < len(predecessors):
+        v_inx = predecessors[u_inx][v_inx]
+        graph_path.append(v_inx)
+        inx += 1
+    return graph_path[::-1]
+

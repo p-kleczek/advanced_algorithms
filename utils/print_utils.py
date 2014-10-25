@@ -1,0 +1,6 @@
+__author__ = 'pawel'
+
+def print_2d(list2d):
+    for row in list2d:
+        print row
+    print

@@ -121,6 +121,7 @@ class Graph(object):
         edges = filter(None, self.get_edges())
         edges.sort()
         s += '\n    '.join(map(str, edges))
+        s += '\n'
         return s
 
 
@@ -235,6 +236,8 @@ def read_graph(filename, graph):
     with open(filename) as f:
         _id = 1
         for line in f:
+            if line.startswith('#') or not line.strip():
+                continue
             vals = line.strip().split('; ')
             e = Edge(_id, int(vals[0]), int(vals[1]), int(vals[2]))
             _id += 1
