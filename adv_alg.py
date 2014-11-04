@@ -1,23 +1,35 @@
-from graphs.graph import MatrixGraph, read_graph
+from datetime import datetime
+
+from graphs.graph import MatrixGraph, read_graph, ListGraph
 from graphs.shortest_paths import floyd_warshall, reconstruct_path
-from utils.print_utils import print_2d
+
 
 __author__ = 'pawel'
 
-g = MatrixGraph()
-read_graph('data/floyd_warshall_2.graph', g)
-# print 'G'
-# print g
 
-pred = floyd_warshall(g)
-# print g
+def lab2():
+    def measure_performance(graph):
+        read_graph('data/duzy_graf.txt', graph)
+        print "Graph read"
+        start_time = datetime.now()
+        floyd_warshall(graph)
+        print "Graph processed"
+        end_time = datetime.now()
+        return end_time - start_time
 
-print_2d(pred)
+    t_matrix = measure_performance(MatrixGraph())
+    t_list = measure_performance(ListGraph())
+    print "R = %.2f" % (t_list.total_seconds() / t_matrix.total_seconds())
+    # R = 1.01
 
-# print graph_path(pred, 0, 3)
-for i in xrange(g.get_vertices_count()):
-    for j in xrange(g.get_vertices_count()):
-        # print i, j
-        pth = reconstruct_path(pred, i, j)
-        if pth:
-            print pth
+    graph = MatrixGraph()
+    read_graph('data/duzy_graf.txt', graph)
+    predecessors = floyd_warshall(graph)
+
+    # inx_from = graph.get_vertex_position(graph.get_vertex(109))
+    # inx_to = graph.get_vertex_position(graph.get_vertex(609))
+    # _path = reconstruct_path(predecessors, 0, 3)
+    # print _path
+
+
+lab2()

@@ -30,12 +30,17 @@ def floyd_warshall(graph):
     for v in graph.vertices:
         x = graph.get_vertex_position(v)
         distances[x][x] = 0
+    print "[FLOYD] Vertices processed"
     for e in graph.get_edges():
         x = graph.get_vertex_position(e.vertex_from)
         y = graph.get_vertex_position(e.vertex_to)
         distances[x][y] = e.weight
         predecessors[x][y] = x
+    print "[FLOYD] Edges processed"
 
+    inx = 0
+    iterations_per_one_percent = len(graph.vertices) ** 3 / 100
+    print "[FLOYD] Total iterations = %d" % (len(graph.vertices) ** 3)
     for u in graph.vertices:
         u_pos = graph.get_vertex_position(u)
         for v1 in graph.vertices:
@@ -46,6 +51,9 @@ def floyd_warshall(graph):
                 if distances[v1_pos][v2_pos] > old_distance:
                     distances[v1_pos][v2_pos] = old_distance
                     predecessors[v1_pos][v2_pos] = predecessors[u_pos][v2_pos]
+                inx += 1
+                if inx % iterations_per_one_percent == 0:
+                    print "[FLOYD] %d%% finished" % (inx / iterations_per_one_percent)
     return predecessors
 
 
