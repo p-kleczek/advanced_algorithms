@@ -41,12 +41,9 @@ def floyd_warshall(graph):
     inx = 0
     iterations_per_one_percent = len(graph.vertices) ** 3 / 100
     print "[FLOYD] Total iterations = %d" % (len(graph.vertices) ** 3)
-    for u in graph.vertices:
-        u_pos = graph.get_vertex_position(u)
-        for v1 in graph.vertices:
-            v1_pos = graph.get_vertex_position(v1)
-            for v2 in graph.vertices:
-                v2_pos = graph.get_vertex_position(v2)
+    for u_pos in xrange(graph.get_vertices_count()):
+        for v1_pos in xrange(graph.get_vertices_count()):
+            for v2_pos in xrange(graph.get_vertices_count()):
                 old_distance = distances[v1_pos][u_pos] + distances[u_pos][v2_pos]
                 if distances[v1_pos][v2_pos] > old_distance:
                     distances[v1_pos][v2_pos] = old_distance
