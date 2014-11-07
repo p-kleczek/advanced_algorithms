@@ -239,6 +239,9 @@ def read_graph(filename, graph):
             if line.startswith('#') or not line.strip():
                 continue
             vals = line.strip().split('; ')
-            e = Edge(_id, int(vals[0]), int(vals[1]), int(vals[2]))
+            v_from = Vertex(int(vals[0]))
+            v_to = Vertex(int(vals[1]))
+            weight = int(vals[2])
+            e = Edge(_id, v_from, v_to, weight)
             _id += 1
             graph.add_edge(e)

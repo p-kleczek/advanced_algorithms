@@ -9,27 +9,39 @@ __author__ = 'pawel'
 
 def lab2():
     def measure_performance(graph):
+        # read_graph('data/floyd_warshall_2.graph', graph)
         read_graph('data/duzy_graf.txt', graph)
         print "Graph read"
         start_time = datetime.now()
-        floyd_warshall(graph)
+        pred = floyd_warshall(graph)
         print "Graph processed"
         end_time = datetime.now()
-        return end_time - start_time
 
-    t_matrix = measure_performance(MatrixGraph())
-    t_list = measure_performance(ListGraph())
-    print "R = %.2f" % (t_list.total_seconds() / t_matrix.total_seconds())
-    # R = 1.01
+        filename = "stats/floyd_warshall/" + graph.__class__.__name__
+        f = open(filename, 'w')
+        for v in graph.vertices:
+            f.write(str(v) + " ")
+        f.write('\n')
+        for row in pred:
+            for item in row:
+                f.write(str(item) + " ")
+            f.write('\n')
+        f.close()
+        return end_time - start_time, pred
 
-    graph = MatrixGraph()
-    read_graph('data/duzy_graf.txt', graph)
-    predecessors = floyd_warshall(graph)
+    # t_matrix, _ = measure_performance(MatrixGraph())
+    graph = ListGraph()
+    t_list, predecessors = measure_performance(graph)
+    # print "R = %.2f" % (t_list.total_seconds() / t_matrix.total_seconds())
+    # R = 0.96
 
-    # inx_from = graph.get_vertex_position(graph.get_vertex(109))
-    # inx_to = graph.get_vertex_position(graph.get_vertex(609))
-    # _path = reconstruct_path(predecessors, 0, 3)
-    # print _path
+    from_label = 109  #109
+    to_label = 609    #609
+    inx_from = graph.get_vertex_position(graph.get_vertex(from_label))
+    inx_to = graph.get_vertex_position(graph.get_vertex(to_label))
+    _path = reconstruct_path(predecessors, inx_from, inx_to, graph)
+    print "Path: " + str(_path)
+    # [109, 713, 870, 614, 808, 609]
 
 
 lab2()

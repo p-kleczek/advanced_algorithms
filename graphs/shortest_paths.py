@@ -39,7 +39,8 @@ def floyd_warshall(graph):
     print "[FLOYD] Edges processed"
 
     inx = 0
-    iterations_per_one_percent = len(graph.vertices) ** 3 / 100
+    total_iterations = len(graph.vertices) ** 3
+    iterations_per_one_percent = total_iterations / 100
     print "[FLOYD] Total iterations = %d" % (len(graph.vertices) ** 3)
     for u_pos in xrange(graph.get_vertices_count()):
         for v1_pos in xrange(graph.get_vertices_count()):
@@ -49,12 +50,14 @@ def floyd_warshall(graph):
                     distances[v1_pos][v2_pos] = old_distance
                     predecessors[v1_pos][v2_pos] = predecessors[u_pos][v2_pos]
                 inx += 1
-                if inx % iterations_per_one_percent == 0:
+                if iterations_per_one_percent == 0:
+                    print "[FLOYD] %d%% finished" % (inx * 100 / total_iterations)
+                elif inx % iterations_per_one_percent == 0:
                     print "[FLOYD] %d%% finished" % (inx / iterations_per_one_percent)
     return predecessors
 
 
-def reconstruct_path(predecessors, u_inx, v_inx):
+def reconstruct_path(predecessors, u_inx, v_inx, graph):
     """
     Reconstructs path from u to v based on the predecessors matrix.
 
@@ -72,5 +75,6 @@ def reconstruct_path(predecessors, u_inx, v_inx):
         v_inx = predecessors[u_inx][v_inx]
         graph_path.append(v_inx)
         inx += 1
+    graph_path = map(lambda pos: graph.vertices[pos].label, graph_path)
     return graph_path[::-1]
 
