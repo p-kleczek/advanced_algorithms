@@ -134,8 +134,7 @@ class MatrixGraph(Graph):
     def add_vertex(self, vertex):
         inx, inserted = super(MatrixGraph, self).add_vertex(vertex)
         if inserted:
-            for row in self.matrix:
-                row.append(None)
+            [row.append(None) for row in self.matrix]
             self.matrix.append([None] * len(self.vertices))
         return inx
 
@@ -200,8 +199,7 @@ class ListGraph(Graph):
     def delete_vertex(self, vertex):
         inx = super(ListGraph, self).delete_vertex(vertex)
         del self.adj_list[inx]
-        for l in self.adj_list:
-            [l.remove(e) for e in l if e.vertex_to == vertex]
+        [[l.remove(e) for e in l if e.vertex_to == vertex] for l in self.adj_list]
 
     def _add_edge_internal(self, edge):
         inx_from = self.add_vertex(edge.vertex_from)

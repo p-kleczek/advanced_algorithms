@@ -2,6 +2,7 @@
 
 import sys
 from utils.print_utils import print_2d
+from utils.consts import INF
 
 __author__ = 'pawel'
 
@@ -21,9 +22,7 @@ __author__ = 'pawel'
 #         d[v1][v2] = d[v1][u] + d[u][v2]
 #         poprzednik[v1][v2] = poprzednik[u][v2]
 
-
 def floyd_warshall(graph):
-    INF = sys.maxint
     n = len(graph.vertices)
     distances = [[INF for i in xrange(n)] for j in xrange(n)]
     predecessors = [[None for i in xrange(n)] for j in xrange(n)]
@@ -62,6 +61,45 @@ def reconstruct_path(predecessors, u_inx, v_inx, graph):
     Reconstructs path from u to v based on the predecessors matrix.
 
     :param predecessors: list of lists
+    :param u_inx: int
+    :param v_inx: int
+    :return: list
+    """
+    if predecessors[0] is list:
+        return reconstruct_path_2d(predecessors, u_inx, v_inx, graph)
+    else:
+        return reconstruct_path_1d(predecessors, u_inx, v_inx, graph)
+
+
+def reconstruct_path_1d(predecessors, u_inx, v_inx, graph):
+    """
+    Reconstructs path from u to v based on the predecessors matrix.
+
+    :param predecessors: list
+    :param u_inx: Vertex
+    :param v_inx: Vertex
+    :return: list
+    """
+    print v_inx
+    print len(predecessors)
+    if predecessors[v_inx] is None:
+        return []
+    graph_path = [v_inx]
+    # Prevent infinity-loops
+    inx = 0
+    while u_inx != v_inx and inx < len(predecessors):
+        v_inx = predecessors[v_inx]
+        graph_path.append(v_inx)
+        inx += 1
+    graph_path = map(lambda pos: graph.vertices[pos].label, graph_path)
+    return graph_path[::-1]
+
+
+def reconstruct_path_2d(predecessors, u_inx, v_inx, graph):
+    """
+    Reconstructs path from u to v based on the predecessors matrix.
+
+    :param predecessors: list of lists
     :param u_inx: Vertex
     :param v_inx: Vertex
     :return: list
@@ -78,3 +116,50 @@ def reconstruct_path(predecessors, u_inx, v_inx, graph):
     graph_path = map(lambda pos: graph.vertices[pos].label, graph_path)
     return graph_path[::-1]
 
+def bellman_ford(graph, source):
+    """
+    :param vertices: list
+    :param edges: list
+    :param source: Vertex
+    :return: (weights, predecessors)
+    """
+    vertices = graph.vertices
+    edges = graph.get_edges()
+
+    weight = [0 for i in xrange(len(vertices))]
+    predecessor = [None for i in xrange(len(vertices))]
+
+    # Step 1: initialize graph
+    for v in vertices:
+        v_pos = graph.get_vertex_position(v)
+        weight[v_pos] = 0 if v is source else INF
+
+    # Step 2: relax edges repeatedly
+    inx = 0
+    total_iterations = len(vertices) * len(edges)
+    iterations_per_one_percent = total_iterations / 100
+    print "[FLOYD] Total iterations = %d" % (len(graph.vertices) ** 3)
+    for i in xrange(1, len(vertices)-1):
+        for e in edges:
+            u = graph.get_vertex_position(e.vertex_from)
+            v = graph.get_vertex_position(e.vertex_to)
+            w = e.weight
+            if weight[u] + w < weight[v]:
+                weight[v] = weight[u] + w
+                predecessor[v] = u
+            inx += 1
+            if iterations_per_one_percent == 0:
+                print "[FLOYD] %d%% finished" % (inx * 100 / total_iterations)
+            elif inx % iterations_per_one_percent == 0:
+                print "[FLOYD] %d%% finished" % (inx / iterations_per_one_percent)
+
+
+    # Step 3: check for negative-weight cycles
+    for e in edges:
+        u = graph.get_vertex_position(e.vertex_from)
+        v = graph.get_vertex_position(e.vertex_to)
+        w = e.weight
+        if weight[u] + w < weight[v]:
+            raise RuntimeError("Graph contains a negative-weight cycle")
+
+    return (weight, predecessor)
