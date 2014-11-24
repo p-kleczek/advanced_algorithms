@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from functools import total_ordering
 import itertools
+import settings
+from utils.print_utils import print_2d
 
 __author__ = 'pawel'
 
@@ -14,10 +16,10 @@ class Vertex(object):
         return str(self.label)
 
     def __eq__(self, other):
-        return self.label == other.label
+        return self.label == other.label if other else False
 
     def __le__(self, other):
-        return self.label < other.label
+        return self.label < other.label if other else False
 
 
 @total_ordering
@@ -49,10 +51,18 @@ class Graph(object):
         :return: index of vertex in the list
         """
         inserted = False
-        if not vertex in self.vertices:
-            self.vertices.append(vertex)
-            inserted = True
-        return self.vertices.index(vertex), inserted
+        if settings.INTEGER_VERTICES:
+            if len(self.vertices) < vertex:
+                inserted = vertex - len(self.vertices)
+                self.vertices.extend([None for i in xrange(vertex - len(self.vertices))])
+            self.vertices[vertex-1] = vertex
+            return vertex-1, inserted
+        else:
+            if len(self.vertices) < vertex.label:
+                inserted = vertex.label - len(self.vertices) + 1
+                self.vertices.extend([None for i in xrange(vertex.label - len(self.vertices))])
+            self.vertices[vertex.label-1] = vertex
+            return vertex.label-1, inserted
 
     def delete_vertex(self, vertex):
         inx = self.vertices.index(vertex)
@@ -83,10 +93,16 @@ class Graph(object):
         return self.get_incoming_edges(vertex) + self.get_outgoing_edges(vertex)
 
     def get_vertex(self, vertex_id):
-        return next(v for v in self.vertices if v.label == vertex_id)
+        if settings.INTEGER_VERTICES:
+            return vertex_id
+        else:
+            return next(v for v in self.vertices if v.label == vertex_id)
 
     def get_vertex_position(self, vertex):
-        return self.vertices.index(vertex)
+        if settings.INTEGER_VERTICES:
+            return vertex - 1
+        else:
+            return self.vertices.index(vertex)
 
     def get_edge(self, edge_id):
         return [e for e in self.get_edges() if e.label == edge_id][0]
@@ -133,9 +149,15 @@ class MatrixGraph(Graph):
 
     def add_vertex(self, vertex):
         inx, inserted = super(MatrixGraph, self).add_vertex(vertex)
-        if inserted:
-            [row.append(None) for row in self.matrix]
-            self.matrix.append([None] * len(self.vertices))
+        if settings.INTEGER_VERTICES:
+            for i in xrange(inserted):
+                [row.append(None) for row in self.matrix]
+            for i in xrange(inserted):
+                self.matrix.append([None] * len(self.vertices))
+        else:
+            if inserted:
+                [row.append(None) for row in self.matrix]
+                self.matrix.append([None] * len(self.vertices))
         return inx
 
     def delete_vertex(self, vertex):
@@ -193,7 +215,7 @@ class ListGraph(Graph):
     def add_vertex(self, vertex):
         inx, inserted = super(ListGraph, self).add_vertex(vertex)
         if inserted:
-            self.adj_list.append([])
+            self.adj_list.extend([[] for i in xrange(inserted)])
         return inx
 
     def delete_vertex(self, vertex):
@@ -215,7 +237,10 @@ class ListGraph(Graph):
         return [e for e in flat_adj_list if e.vertex_to == vertex]
 
     def get_outgoing_edges(self, vertex):
-        inx = self.vertices.index(vertex)
+        if settings.INTEGER_VERTICES:
+            inx = vertex - 1
+        else:
+            inx = self.get_vertex_position(vertex)
         return self.adj_list[inx]
 
     def get_edges(self):
@@ -237,8 +262,14 @@ def read_graph(filename, graph):
             if line.startswith('#') or not line.strip():
                 continue
             vals = line.strip().split('; ')
-            v_from = Vertex(int(vals[0]))
-            v_to = Vertex(int(vals[1]))
+            v_from_label = int(vals[0])
+            v_to_label = int(vals[1])
+            if settings.INTEGER_VERTICES:
+                v_from = v_from_label
+                v_to = v_to_label
+            else:
+                v_from = Vertex(v_from_label)
+                v_to = Vertex(v_to_label)
             weight = int(vals[2])
             e = Edge(_id, v_from, v_to, weight)
             _id += 1

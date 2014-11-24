@@ -50,7 +50,7 @@ def lab2():
 
 
 def lab3():
-    debug = False
+    debug = True
 
     def measure_performance(graph):
         if debug:

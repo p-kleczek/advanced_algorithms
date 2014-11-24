@@ -3,6 +3,7 @@
 import sys
 from utils.print_utils import print_2d
 from utils.consts import INF
+import settings
 
 __author__ = 'pawel'
 
@@ -65,10 +66,20 @@ def reconstruct_path(predecessors, u_inx, v_inx, graph):
     :param v_inx: int
     :return: list
     """
-    if predecessors[0] is list:
-        return reconstruct_path_2d(predecessors, u_inx, v_inx, graph)
+    if settings.INTEGER_VERTICES:
+        u_inx = u_inx - 1
+        v_inx = v_inx - 1
+
+    if isinstance(predecessors[0], list):
+        _path = reconstruct_path_2d(predecessors, u_inx, v_inx, graph)
     else:
-        return reconstruct_path_1d(predecessors, u_inx, v_inx, graph)
+        _path = reconstruct_path_1d(predecessors, u_inx, v_inx, graph)
+
+    if settings.INTEGER_VERTICES:
+        _path = map(lambda pos: pos + 1, _path)
+    else:
+        _path = map(lambda pos: graph.vertices[pos].label, _path)
+    return _path
 
 
 def reconstruct_path_1d(predecessors, u_inx, v_inx, graph):
@@ -80,8 +91,6 @@ def reconstruct_path_1d(predecessors, u_inx, v_inx, graph):
     :param v_inx: Vertex
     :return: list
     """
-    print v_inx
-    print len(predecessors)
     if predecessors[v_inx] is None:
         return []
     graph_path = [v_inx]
@@ -91,7 +100,6 @@ def reconstruct_path_1d(predecessors, u_inx, v_inx, graph):
         v_inx = predecessors[v_inx]
         graph_path.append(v_inx)
         inx += 1
-    graph_path = map(lambda pos: graph.vertices[pos].label, graph_path)
     return graph_path[::-1]
 
 
@@ -111,9 +119,10 @@ def reconstruct_path_2d(predecessors, u_inx, v_inx, graph):
     inx = 0
     while u_inx != v_inx and inx < len(predecessors):
         v_inx = predecessors[u_inx][v_inx]
+        if settings.INTEGER_VERTICES:
+            v_inx = v_inx - 1
         graph_path.append(v_inx)
         inx += 1
-    graph_path = map(lambda pos: graph.vertices[pos].label, graph_path)
     return graph_path[::-1]
 
 def bellman_ford(graph, source):

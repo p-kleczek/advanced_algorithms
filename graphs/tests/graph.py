@@ -1,6 +1,8 @@
 from graphs.graph import MatrixGraph, Vertex, Edge, ListGraph, Graph, read_graph
 
 import unittest
+import settings
+from utils.print_utils import print_2d
 
 
 class GraphTest(unittest.TestCase):
@@ -14,11 +16,18 @@ class GraphTest(unittest.TestCase):
     E2_LABEL = 2
     E3_LABEL = 3
 
-    v1 = Vertex(V1_LABEL)
-    v2 = Vertex(V2_LABEL)
-    v3 = Vertex(V3_LABEL)
-    v4 = Vertex(V4_LABEL)
-    v5 = Vertex(V5_LABEL)
+    if settings.INTEGER_VERTICES:
+        v1 = 1
+        v2 = 2
+        v3 = 3
+        v4 = 4
+        v5 = 5
+    else:
+        v1 = Vertex(V1_LABEL)
+        v2 = Vertex(V2_LABEL)
+        v3 = Vertex(V3_LABEL)
+        v4 = Vertex(V4_LABEL)
+        v5 = Vertex(V5_LABEL)
 
     e1 = Edge(E1_LABEL, v1, v2, 3)
     e2 = Edge(E2_LABEL, v2, v1, 5)
@@ -42,6 +51,8 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(self.g.get_vertices_count(), 2)
 
     def test_get_vertex_position(self):
+        if settings.INTEGER_VERTICES:
+            return
         self.g.add_vertex(self.v1)
         self.g.add_vertex(self.v2)
         self.g.add_vertex(self.v3)
@@ -84,6 +95,8 @@ class MatrixGraphTest(GraphTest):
         self.assertListEqual(self.g.matrix, [[None, None], [None, None]])
 
     def test_delete_edge_one_remaining(self):
+        if settings.INTEGER_VERTICES:
+            return
         self.g.add_edge(self.e1)
         self.g.add_edge(self.e2)
         self.g.delete_edge(self.e2)
