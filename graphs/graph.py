@@ -52,11 +52,11 @@ class Graph(object):
         """
         inserted = False
         if settings.INTEGER_VERTICES:
-            if len(self.vertices) < vertex:
-                inserted = vertex - len(self.vertices)
-                self.vertices.extend([None for i in xrange(vertex - len(self.vertices))])
-            self.vertices[vertex-1] = vertex
-            return vertex-1, inserted
+            if len(self.vertices) <= vertex:
+                inserted = vertex - len(self.vertices) + 1
+                self.vertices.extend([None for i in xrange(inserted)])
+            self.vertices[vertex] = vertex
+            return vertex, inserted
         else:
             if len(self.vertices) < vertex.label:
                 inserted = vertex.label - len(self.vertices) + 1
@@ -71,7 +71,8 @@ class Graph(object):
 
     def add_edge(self, edge):
         if self.is_edge_exist(edge.vertex_from, edge.vertex_to):
-            print 'WARNING: Edge %s -> %s already exist! (skipped)' % (edge.vertex_from, edge.vertex_to)
+            if not settings.SURPRESS_WARNINGS:
+                print 'WARNING: Edge %s -> %s already exist! (skipped)' % (edge.vertex_from, edge.vertex_to)
         else:
             self._add_edge_internal(edge)
 
@@ -100,7 +101,7 @@ class Graph(object):
 
     def get_vertex_position(self, vertex):
         if settings.INTEGER_VERTICES:
-            return vertex - 1
+            return vertex
         else:
             return self.vertices.index(vertex)
 
@@ -238,7 +239,7 @@ class ListGraph(Graph):
 
     def get_outgoing_edges(self, vertex):
         if settings.INTEGER_VERTICES:
-            inx = vertex - 1
+            inx = vertex
         else:
             inx = self.get_vertex_position(vertex)
         return self.adj_list[inx]
@@ -246,11 +247,19 @@ class ListGraph(Graph):
     def get_edges(self):
         return filter(None, list(itertools.chain.from_iterable(self.adj_list)))
 
+    # TODO: test this method
     def is_edge_exist(self, vertex_from, vertex_to):
-        try:
-            inx_from = self.vertices.index(vertex_from)
-        except ValueError:
-            return False
+        if settings.INTEGER_VERTICES:
+            inx_from = vertex_from
+            try:
+                self.adj_list[inx_from]
+            except IndexError:
+                return False
+        else:
+            try:
+                inx_from = self.vertices.index(vertex_from)
+            except ValueError:
+                return False
 
         return any(e.vertex_to == vertex_to for e in self.adj_list[inx_from])
 

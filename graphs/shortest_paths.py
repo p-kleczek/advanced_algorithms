@@ -66,18 +66,12 @@ def reconstruct_path(predecessors, u_inx, v_inx, graph):
     :param v_inx: int
     :return: list
     """
-    if settings.INTEGER_VERTICES:
-        u_inx = u_inx - 1
-        v_inx = v_inx - 1
-
     if isinstance(predecessors[0], list):
         _path = reconstruct_path_2d(predecessors, u_inx, v_inx, graph)
     else:
         _path = reconstruct_path_1d(predecessors, u_inx, v_inx, graph)
 
-    if settings.INTEGER_VERTICES:
-        _path = map(lambda pos: pos + 1, _path)
-    else:
+    if not settings.INTEGER_VERTICES:
         _path = map(lambda pos: graph.vertices[pos].label, _path)
     return _path
 
@@ -119,8 +113,6 @@ def reconstruct_path_2d(predecessors, u_inx, v_inx, graph):
     inx = 0
     while u_inx != v_inx and inx < len(predecessors):
         v_inx = predecessors[u_inx][v_inx]
-        if settings.INTEGER_VERTICES:
-            v_inx = v_inx - 1
         graph_path.append(v_inx)
         inx += 1
     return graph_path[::-1]
@@ -135,40 +127,46 @@ def bellman_ford(graph, source):
     vertices = graph.vertices
     edges = graph.get_edges()
 
-    weight = [0 for i in xrange(len(vertices))]
+    cost = [0 for i in xrange(len(vertices))]
     predecessor = [None for i in xrange(len(vertices))]
 
     # Step 1: initialize graph
     for v in vertices:
-        v_pos = graph.get_vertex_position(v)
-        weight[v_pos] = 0 if v is source else INF
+        if settings.INTEGER_VERTICES:
+            v_pos = v
+        else:
+            v_pos = graph.get_vertex_position(v)
+        cost[v_pos] = 0 if v is source else INF
 
     # Step 2: relax edges repeatedly
     inx = 0
-    total_iterations = len(vertices) * len(edges)
+    total_iterations = (len(vertices) - 1) * len(edges)
     iterations_per_one_percent = total_iterations / 100
-    print "[FLOYD] Total iterations = %d" % (len(graph.vertices) ** 3)
-    for i in xrange(1, len(vertices)-1):
+    print "[BELL] Total iterations = %d" % total_iterations
+    for i in xrange(len(vertices)-1):
         for e in edges:
-            u = graph.get_vertex_position(e.vertex_from)
-            v = graph.get_vertex_position(e.vertex_to)
+            if settings.INTEGER_VERTICES:
+                u = e.vertex_from
+                v = e.vertex_to
+            else:
+                u = graph.get_vertex_position(e.vertex_from)
+                v = graph.get_vertex_position(e.vertex_to)
             w = e.weight
-            if weight[u] + w < weight[v]:
-                weight[v] = weight[u] + w
+            if cost[u] + w < cost[v]:
+                cost[v] = cost[u] + w
                 predecessor[v] = u
             inx += 1
             if iterations_per_one_percent == 0:
-                print "[FLOYD] %d%% finished" % (inx * 100 / total_iterations)
+                print "[BELL] %d%% finished" % (inx * 100 / total_iterations)
             elif inx % iterations_per_one_percent == 0:
-                print "[FLOYD] %d%% finished" % (inx / iterations_per_one_percent)
-
+                print "[BELL] %d%% finished" % (inx / iterations_per_one_percent)
 
     # Step 3: check for negative-weight cycles
     for e in edges:
         u = graph.get_vertex_position(e.vertex_from)
         v = graph.get_vertex_position(e.vertex_to)
         w = e.weight
-        if weight[u] + w < weight[v]:
+        if cost[u] + w < cost[v]:
             raise RuntimeError("Graph contains a negative-weight cycle")
 
-    return (weight, predecessor)
+    return (cost, predecessor)
