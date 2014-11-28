@@ -133,11 +133,23 @@ def lab4():
     graph = ListGraph()
     if settings.DEBUG:
         read_graph('data/floyd_warshall_2.graph', graph)
-        print max_flow(graph, 0, 2)
+        flow, maxflow = max_flow(graph, 0, 2)
     else:
         read_graph('data/duzy_graf.txt', graph)
-        print "Graph read"
-        print max_flow(graph, 109, 609)
-#         10738
+        if not settings.SURPRESS_OUTPUT:
+            print "Graph read"
+        flow, maxflow = max_flow(graph, 109, 609)
+#         maxflow = 10738
+
+    # if not settings.DEBUG:
+    if True:
+        filename = "stats/ford_fulkerson/flow"
+        f = open(filename, 'w')
+        for row in flow:
+            f.write(str(row) + "\n")
+        f.close()
+
+    print 'flow', flow
+    print 'max_flow', maxflow
 
 lab4()
