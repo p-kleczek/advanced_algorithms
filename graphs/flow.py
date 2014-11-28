@@ -36,5 +36,4 @@ def max_flow(graph, source, target):
     :return: flow matrix, max_flow(source, target)
     """
     flow = ford_fulkerson(graph, source, target)
-    print flow
     return flow, sum(flow[source])
