@@ -108,6 +108,9 @@ class Graph(object):
     def get_edge(self, edge_id):
         return [e for e in self.get_edges() if e.label == edge_id][0]
 
+    def get_edge(self, vertex_from, vertex_to):
+        raise NotImplementedError()
+
     @classmethod
     def get_edge_ends(cls, edge):
         return edge.vertex_from, edge.vertex_to
@@ -207,6 +210,10 @@ class MatrixGraph(Graph):
     def get_edges(self):
         return filter(None, list(itertools.chain.from_iterable(self.matrix)))
 
+    def get_edge(self, vertex_from, vertex_to):
+        assert settings.INTEGER_VERTICES
+        return self.matrix[vertex_from][vertex_to]
+
 
 class ListGraph(Graph):
     def __init__(self):
@@ -247,6 +254,10 @@ class ListGraph(Graph):
     def get_edges(self):
         return filter(None, list(itertools.chain.from_iterable(self.adj_list)))
 
+    def get_edge(self, vertex_from, vertex_to):
+        assert settings.INTEGER_VERTICES
+        return filter(lambda e: e.vertex_to == vertex_to, self.adj_list[vertex_from])[0]
+
     # TODO: test this method
     def is_edge_exist(self, vertex_from, vertex_to):
         if settings.INTEGER_VERTICES:
@@ -283,3 +294,12 @@ def read_graph(filename, graph):
             e = Edge(_id, v_from, v_to, weight)
             _id += 1
             graph.add_edge(e)
+
+
+def vertex_path_to_edge_path(graph, vertex_path):
+    edge_path = []
+    v_from = vertex_path[0]
+    for v_to in vertex_path[1:]:
+        edge_path.append(graph.get_edge(v_from, v_to))
+        v_from = v_to
+    return edge_path

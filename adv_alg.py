@@ -1,7 +1,9 @@
 from datetime import datetime
+from graphs.flow import *
 
-from graphs.graph import MatrixGraph, read_graph, ListGraph
-from graphs.shortest_paths import floyd_warshall, reconstruct_path, bellman_ford
+from graphs.graph import *
+from graphs.search import *
+from graphs.shortest_paths import *
 import settings
 from utils.print_utils import print_2d
 
@@ -126,4 +128,16 @@ def lab3():
             }
         print "Cost (%(from)d -> %(to)d): %(cost)s" % data
 
-lab3()
+
+def lab4():
+    graph = ListGraph()
+    if settings.DEBUG:
+        read_graph('data/floyd_warshall_2.graph', graph)
+        print max_flow(graph, 0, 2)
+    else:
+        read_graph('data/duzy_graf.txt', graph)
+        print "Graph read"
+        print max_flow(graph, 109, 609)
+#         10738
+
+lab4()
