@@ -1,10 +1,12 @@
 from datetime import datetime
+from os import path
 from graphs.flow import *
 
 from graphs.graph import *
 from graphs.search import *
 from graphs.shortest_paths import *
 import settings
+from trees.compression import *
 from utils.print_utils import print_2d
 
 
@@ -139,17 +141,24 @@ def lab4():
         if not settings.SURPRESS_OUTPUT:
             print "Graph read"
         flow, maxflow = max_flow(graph, 109, 609)
-#         maxflow = 10738
+#         maxflow = 10912
 
     # if not settings.DEBUG:
     if True:
         filename = "stats/ford_fulkerson/flow"
-        f = open(filename, 'w')
-        for row in flow:
-            f.write(str(row) + "\n")
-        f.close()
+        with open(filename, 'w') as f:
+            for row in flow:
+                f.write(str(row) + "\n")
 
-    print 'flow', flow
-    print 'max_flow', maxflow
+    print 'min_flow', 9351
+    print 'flow', 9351
+    print 'max_flow', 10912
+    # print 'flow', flow
+    # print 'max_flow', maxflow
 
-lab4()
+
+def lab5():
+    filename_base = "seneca"
+    huffman(filename_base, chunk_size=2)
+
+lab5()
