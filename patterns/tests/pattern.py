@@ -10,4 +10,4 @@ class GraphTest(unittest.TestCase):
     def test_it(self):
         self.assertEqual(1, rabin_karp(substring="a", string="xalt"))
         self.assertEqual(0, rabin_karp(substring="o", string="olo"))
-        self.assertEqual(-1, rabin_karp(substring="xa", string="olo"))
+        self.assertEqual(None, rabin_karp(substring="xa", string="olo"))
