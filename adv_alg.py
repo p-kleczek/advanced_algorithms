@@ -1,5 +1,6 @@
 from datetime import datetime
 from os import path
+from geometrics.geometric import convex_hull
 from graphs.flow import *
 
 from graphs.graph import *
@@ -161,4 +162,25 @@ def lab5():
     filename_base = "seneca"
     huffman(filename_base, chunk_size=2)
 
-lab5()
+
+def lab6():
+    in_file_path = make_path("%s%s" % (settings.DATA_FOLDER, "graham_points.csv"))
+    points = []
+    with open(in_file_path) as input_file:
+        for line in input_file:
+            line = line.strip()
+            floats = line.split(', ')
+            points.append((float(floats[0]), float(floats[1])))
+    # points = [
+    #     (0, 0),
+    #     (0, 2),
+    #     (2, 2),
+    #     (2, 0),
+    #     (1, 1),
+    # ]
+    hull = convex_hull(points)
+
+    for point in hull:
+        print point
+
+lab6()
