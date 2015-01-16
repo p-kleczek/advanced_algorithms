@@ -187,3 +187,16 @@ def huffman(filename_base, chunk_size):
     out_file_path = make_path("%s%s_decoded%s" % (settings.OUT_FOLDER, filename_base, settings.HUFFMAN_DATAFILE_EXTENSION))
     with open(out_file_path, 'w') as f:
         f.write(decoded_string.encode('utf8'))
+
+    file_path = make_path("%s%s%s" % (settings.DATA_FOLDER, filename_base, settings.HUFFMAN_DATAFILE_EXTENSION))
+    decoded_file_size = os.path.getsize(file_path)
+    file_path = make_path("%s%s_encoded%s" % (settings.OUT_FOLDER, filename_base, settings.HUFFMAN_DATAFILE_EXTENSION))
+    encoded_file_size = os.path.getsize(file_path)
+    file_path = make_path("%s%s_encoding%s" % (settings.OUT_FOLDER, filename_base, settings.HUFFMAN_DATAFILE_EXTENSION))
+    encoding_file_size = os.path.getsize(file_path)
+
+    print "Encoded size:", encoded_file_size
+    print "Encodingsize:", encoding_file_size
+    print "Decoded size:", decoded_file_size
+
+    print "Compression rate:", float(encoded_file_size + encoding_file_size) / float(decoded_file_size) * 100.0, "%"
