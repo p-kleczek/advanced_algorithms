@@ -42,12 +42,12 @@ def knuth_morris_pratt(text, pattern):
             shift += shifts[pos - shift]
         shifts[pos + 1] = shift
 
-    startPos = matchLen = 0
+    start_pos = match_len = 0
     for c in text:
-        while matchLen == len(pattern) or \
-                matchLen >= 0 and pattern[matchLen] != c:
-            startPos += shifts[matchLen]
-            matchLen -= shifts[matchLen]
-        matchLen += 1
-        if matchLen == len(pattern):
-            yield startPos
+        while match_len == len(pattern) or \
+                match_len >= 0 and pattern[match_len] != c:
+            start_pos += shifts[match_len]
+            match_len -= shifts[match_len]
+        match_len += 1
+        if match_len == len(pattern):
+            yield start_pos
