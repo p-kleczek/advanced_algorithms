@@ -6,6 +6,7 @@ from graphs.flow import *
 from graphs.graph import *
 from graphs.search import *
 from graphs.shortest_paths import *
+from patterns.pattern import rabin_karp
 import settings
 from trees.compression import *
 from utils.print_utils import print_2d
@@ -183,4 +184,15 @@ def lab6():
     for point in hull:
         print point
 
-lab6()
+
+def lab7():
+    def run_for(subs, s):
+        pos = rabin_karp(subs, s)
+        print "rk(%s, %s) = %d" % (subs, s, pos)
+
+    run_for(subs="a", s="xalt")
+    run_for(subs="o", s="olo")
+    run_for(subs="xa", s="olo")
+
+
+lab7()
