@@ -6,7 +6,7 @@ from graphs.flow import *
 from graphs.graph import *
 from graphs.search import *
 from graphs.shortest_paths import *
-from patterns.pattern import rabin_karp
+from patterns.pattern import rabin_karp, knuth_morris_pratt
 import settings
 from trees.compression import *
 from utils.print_utils import print_2d
@@ -186,13 +186,27 @@ def lab6():
 
 
 def lab7():
+    # Rabin-Karp
     def run_for(subs, s):
         pos = rabin_karp(subs, s)
-        print "rk(%s, %s) = %d" % (subs, s, pos)
+        print "rk(%s, %s): " % (subs, s), pos
 
     run_for(subs="a", s="xalt")
     run_for(subs="o", s="olo")
     run_for(subs="xa", s="olo")
+
+    # Knuth-Morris-Pratt
+    def run_for(pattern, text):
+        data = {
+            'text': text,
+            'pattern': pattern,
+            'result': list(knuth_morris_pratt(text, pattern)) or '-'
+        }
+        print "kmp(%(text)s, %(pattern)s): %(result)s" % data
+
+    run_for(pattern="a", text="xalt")
+    run_for(pattern="o", text="olo")
+    run_for(pattern="xa", text="olo")
 
 
 lab7()
